@@ -11,7 +11,7 @@ const Hero: React.FC = () => {
           type="button"
           onClick={() =>
             window.open(
-              "https://github.com/roobiwebdev/Day-85-AI-Powered-Article-Summarizer.git",
+              "https://github.com/roobiwebdev/Day-85-Sumz-AI.git",
               "_blank"
             )
           }
