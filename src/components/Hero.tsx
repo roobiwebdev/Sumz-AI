@@ -20,7 +20,6 @@ const Hero: React.FC = () => {
           GitHub
         </button>
       </nav>
-
       <h1 className="head_text">
         Summarize Articles With
         <br className="max-md:hidden" />
