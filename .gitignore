@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Agent workflow (new-feature worktrees, evidence-driven-testing output)
+.worktrees/
+.artifacts/
