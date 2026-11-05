@@ -33,7 +33,7 @@ npm run auth:generate  # regenerate src/db/schema/auth.ts after changing Better 
 
 ## 2. Architecture
 
-Next.js 16 (App Router, Turbopack) + React 19 + TypeScript, Tailwind CSS v4, Better Auth, Drizzle ORM on Neon Postgres, Resend for email, `motion` for animation.
+Next.js 16 (App Router, Turbopack) + React 19 + TypeScript, Tailwind CSS v4, Better Auth, Drizzle ORM on Neon Postgres, Resend for email, OpenAI via the AI SDK for summaries, `motion` for animation.
 
 ```
 src/app/page.tsx            Landing page (server component; passes signedIn to client sections)
@@ -48,11 +48,11 @@ src/components/ui|landing|auth|app   Shared primitives, then per-area components
 
 Request flow: **UI → server action (`src/app/app/actions.ts`) → `requireUser()` + Zod validation → service in `src/server/*` → `db`.**
 
-- **Env is read in exactly one place:** `src/server/env.ts` (Zod-validated). Optional integrations (Google, Resend, RapidAPI) are exposed as `integrations.*` flags and the UI degrades when they're missing (no Google button, emails logged to the server console, summarizer disabled). Only `drizzle.config.ts` reads `process.env` directly.
+- **Env is read in exactly one place:** `src/server/env.ts` (Zod-validated). Optional integrations (Google, Resend, OpenAI) are exposed as `integrations.*` flags and the UI degrades when they're missing (no Google button, emails logged to the server console, summarizer disabled). Only `drizzle.config.ts` reads `process.env` directly.
 - **Security checkpoint:** `requireUser()` in `src/server/session.ts` verifies the session for every protected page and server action. `proxy.ts` is only a fast redirect, never the real check. Every query on user data filters by `userId`.
 - **Auth:** `src/server/auth.ts` — email + password (email verification required, reset via email, sessions revoked on reset), Google (enabled when both Google env vars are set), DB-backed rate limits with stricter rules on sign-in/sign-up/reset. `user.plan` (default `free`) is the hook for paid tiers. Client calls go through `authClient` in `src/lib/auth-client.ts`.
 - **Database driver:** Neon WebSocket `Pool` (`drizzle-orm/neon-serverless`), not the HTTP driver, because Better Auth's adapter runs multi-step writes in transactions (`transaction: true`).
-- **Summarizer:** `src/server/summaries.ts` calls RapidAPI "Article Extractor and Summarizer" server-side (key never reaches the browser), enforces `SUMMARY_DAILY_LIMIT` per user per UTC day by counting rows, and stores results in the `summary` table.
+- **Summarizer:** `src/server/article.ts` fetches the page (blocks private/internal addresses on every redirect hop, 2 MB and 15 s caps) and extracts the text with Mozilla Readability + linkedom; `src/server/summaries.ts` summarizes it with OpenAI through the AI SDK (`OPENAI_MODEL`, default `gpt-5.4-mini`; key never reaches the browser), enforces `SUMMARY_DAILY_LIMIT` per user per UTC day by counting rows, and stores results in the `summary` table.
 
 ### Single sources of truth (grep these first)
 
@@ -63,6 +63,7 @@ Request flow: **UI → server action (`src/app/app/actions.ts`) → `requireUser
 | Session check for pages/actions  | `src/server/session.ts` (`getSession`, `requireUser`)       |
 | Tables and row types             | `src/db/schema/*` (`typeof table.$inferSelect`)             |
 | Summaries: call, cap, store      | `src/server/summaries.ts`                                   |
+| Safe page fetch + text extraction| `src/server/article.ts` (`fetchArticle`)                    |
 | Transactional email              | `src/server/email.ts` (`sendActionEmail`, `escapeHtml`)     |
 | Brand colors, fonts, gradients   | `src/app/globals.css` (`@theme` tokens + brand utilities)   |
 | Buttons, inputs, logo, typewriter| `src/components/ui/*`                                       |

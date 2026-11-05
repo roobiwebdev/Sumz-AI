@@ -2,10 +2,10 @@ import "server-only";
 import { z } from "zod";
 
 /**
- * SOURCE OF TRUTH KEYWORDS: env, serverEnv, environment variables, config, secrets, DATABASE_URL, RAPIDAPI_KEY
+ * SOURCE OF TRUTH KEYWORDS: env, serverEnv, environment variables, config, secrets, DATABASE_URL, OPENAI_API_KEY
  * WHAT:  Parses and validates every server environment variable once.
  * WHY:   Env is read in exactly one place so a missing or malformed value fails loudly at startup,
- *        and optional integrations (Google, Resend, RapidAPI) can report themselves as unconfigured.
+ *        and optional integrations (Google, Resend, OpenAI) can report themselves as unconfigured.
  * WHERE: src/server/*, src/db/index.ts. Never read process.env anywhere else (drizzle.config.ts excepted).
  */
 const optional = z
@@ -22,7 +22,8 @@ const schema = z.object({
   GOOGLE_CLIENT_SECRET: optional,
   RESEND_API_KEY: optional,
   EMAIL_FROM: z.string().default("Sumz AI <onboarding@resend.dev>"),
-  RAPIDAPI_KEY: optional,
+  OPENAI_API_KEY: optional,
+  OPENAI_MODEL: z.string().trim().min(1).default("gpt-5.4-mini"),
   SUMMARY_DAILY_LIMIT: z.coerce.number().int().positive().default(25),
 });
 
@@ -31,5 +32,5 @@ export const serverEnv = schema.parse(process.env);
 export const integrations = {
   google: Boolean(serverEnv.GOOGLE_CLIENT_ID && serverEnv.GOOGLE_CLIENT_SECRET),
   email: Boolean(serverEnv.RESEND_API_KEY),
-  summarizer: Boolean(serverEnv.RAPIDAPI_KEY),
+  summarizer: Boolean(serverEnv.OPENAI_API_KEY),
 } as const;
