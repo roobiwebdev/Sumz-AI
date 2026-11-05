@@ -117,7 +117,7 @@ export function Summarizer({
         </div>
         {!configured ? (
           <div className="mt-4">
-            <FormAlert>The summarizer isn&apos;t connected yet. Add RAPIDAPI_KEY to the server environment.</FormAlert>
+            <FormAlert>The summarizer isn&apos;t connected yet. Add OPENAI_API_KEY to the server environment.</FormAlert>
           </div>
         ) : null}
         {error ? (
@@ -143,6 +143,7 @@ export function Summarizer({
                 <p className="text-xs font-semibold tracking-[0.18em] text-subtle uppercase">
                   Article <span className="text-gradient-accent">summary</span>
                 </p>
+                {active.title ? <h2 className="mt-1.5 font-display text-lg leading-snug font-bold text-balance">{active.title}</h2> : null}
                 <a href={active.url} target="_blank" rel="noreferrer" className="mt-1.5 inline-flex max-w-full items-center gap-1.5 text-sm text-accent-soft hover:underline">
                   <span className="truncate">{hostname(active.url)}</span>
                   <ExternalLink className="size-3.5 shrink-0" />
@@ -189,8 +190,8 @@ export function Summarizer({
                   <button type="button" onClick={() => setActiveId(item.id)} className="flex min-w-0 flex-1 items-center gap-3 text-left">
                     <Link2 className="size-4 shrink-0 text-brand" />
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate text-sm text-foreground">{hostname(item.url)}</span>
-                      <span className="block truncate text-xs text-subtle">{item.url}</span>
+                      <span className="block truncate text-sm text-foreground">{item.title ?? hostname(item.url)}</span>
+                      <span className="block truncate text-xs text-subtle">{item.title ? hostname(item.url) : item.url}</span>
                     </span>
                     <span className="hidden shrink-0 text-xs text-subtle sm:inline">{timeFormat.format(new Date(item.createdAt))}</span>
                   </button>

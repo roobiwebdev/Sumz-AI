@@ -15,9 +15,13 @@
     "auth:generate": "npx @better-auth/cli@latest generate --config src/server/auth.ts --output src/db/schema/auth.ts --yes"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^4.0.109",
+    "@mozilla/readability": "^0.6.0",
     "@neondatabase/serverless": "^1.2.0",
+    "ai": "^7.0.163",
     "better-auth": "^1.7.17",
     "drizzle-orm": "^0.45.4",
+    "linkedom": "^0.18.15",
     "lucide-react": "^1.68.0",
     "motion": "^14.9.1",
     "next": "^16.4.5",
