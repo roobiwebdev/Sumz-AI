@@ -136,5 +136,6 @@ Pick the steps a task needs. A plan, review or local experiment does not imply a
 - Without `RESEND_API_KEY`, verification and reset links are printed to the dev-server console.
 - Local queries are slow on high-latency connections (each Neon round trip from far away can take seconds); deploy app servers in the database's region (Vercel `iad1`).
 - Google sign-in needs the redirect URI `<BETTER_AUTH_URL>/api/auth/callback/google` registered in Google Cloud Console.
+- Production: Vercel project `sumz-ai` (team roobis-projects) at https://sumz.roobi.dev, region `iad1`. `vercel.json` pins the framework to Next.js because the project was first detected as the old Vite app. Production env vars live in Vercel (`vercel env ls`); its `BETTER_AUTH_SECRET` differs from local. Deploy with `vercel deploy --prod` only when the user asks.
 
 Keep this file updated when you change structure, commands or conventions.
