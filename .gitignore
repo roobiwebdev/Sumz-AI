@@ -26,3 +26,13 @@ dist-ssr
 # Agent workflow (new-feature worktrees, evidence-driven-testing output)
 .worktrees/
 .artifacts/
+
+# Next.js
+.next/
+next-env.d.ts
+*.tsbuildinfo
+
+# Env (never commit secrets; .env.example is the template)
+.env
+.env*.local
+!.env.example
