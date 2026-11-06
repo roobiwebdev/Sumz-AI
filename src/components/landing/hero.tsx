@@ -2,8 +2,20 @@
 
 import { ArrowRight, Check } from "lucide-react";
 import { motion } from "motion/react";
+import dynamic from "next/dynamic";
 import { ButtonLink } from "@/components/ui/button";
-import { HeroDemo } from "./hero-demo";
+import { STAGE } from "./film/script";
+
+// The film loads after the headline and CTA have painted; the placeholder holds its space.
+const FilmShowcase = dynamic(() => import("./film/showcase"), {
+  ssr: false,
+  loading: () => (
+    <div className="mx-auto w-full max-w-6xl">
+      <div className="w-full rounded-2xl bg-film-wallpaper ring-1 ring-border-strong" style={{ aspectRatio: `${STAGE.w} / ${STAGE.h}` }} />
+      <div className="mt-4 h-9" />
+    </div>
+  ),
+});
 
 const ticks = ["Free to start", "Works on any article link", "History saved to your account"];
 
@@ -67,9 +79,9 @@ export function Hero({ signedIn }: { signedIn: boolean }) {
         initial={{ opacity: 0, y: 60, scale: 0.96 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 1, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
-        className="mt-16 sm:mt-20"
+        className="mt-14 sm:mt-20"
       >
-        <HeroDemo />
+        <FilmShowcase />
       </motion.div>
     </section>
   );

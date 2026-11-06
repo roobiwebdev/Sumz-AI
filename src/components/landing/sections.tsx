@@ -1,9 +1,10 @@
 "use client";
 
-import { Check, ChevronDown, Clock, Copy, Link2, ShieldCheck, Trash2 } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { animate, AnimatePresence, motion, useInView, useReducedMotion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { ButtonLink } from "@/components/ui/button";
+import { FeatureCards } from "./cards/feature-cards";
 import { Reveal, SectionHeading } from "./reveal";
 
 /* ---------- Source strip (looping marquee) ---------- */
@@ -56,186 +57,15 @@ export function HowItWorks() {
   );
 }
 
-/* ---------- Feature blocks (copy beside a product card) ---------- */
-
-function FeatureRow({
-  eyebrow,
-  title,
-  points,
-  card,
-  flip,
-}: {
-  eyebrow: string;
-  title: string;
-  points: Array<{ title: string; body: string }>;
-  card: React.ReactNode;
-  flip?: boolean;
-}) {
-  return (
-    <div className="grid grid-cols-1 items-center gap-10 md:grid-cols-2 md:gap-16">
-      <Reveal className={flip ? "min-w-0 md:order-2" : "min-w-0"}>
-        <p className="text-xs font-semibold tracking-[0.2em] text-brand uppercase">{eyebrow}</p>
-        <h3 className="mt-3 font-display text-3xl font-bold tracking-tight text-balance sm:text-4xl">{title}</h3>
-        <div className="mt-8 space-y-6">
-          {points.map((p) => (
-            <div key={p.title} className="flex gap-4">
-              <span className="mt-1 inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-brand/15">
-                <Check className="size-3.5 text-brand" />
-              </span>
-              <div>
-                <h4 className="font-semibold">{p.title}</h4>
-                <p className="mt-1 text-muted">{p.body}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </Reveal>
-      <Reveal delay={0.15} className={flip ? "min-w-0 md:order-1" : "min-w-0"}>
-        {card}
-      </Reveal>
-    </div>
-  );
-}
-
-function CardShell({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="relative">
-      <div className="absolute inset-6 -z-10 bg-aurora opacity-15" />
-      <div className="rounded-3xl border border-border bg-surface/90 p-5 shadow-2xl shadow-black/50 backdrop-blur sm:p-6">{children}</div>
-    </div>
-  );
-}
-
-const historyItems = [
-  { url: "longreads.example/four-day-week", when: "2 min ago" },
-  { url: "engineering.example/postgres-at-scale", when: "Yesterday" },
-  { url: "science.example/sleep-and-memory", when: "Mon" },
-  { url: "news.example/climate-report-2026", when: "Last week" },
-];
-
-function HistoryCard() {
-  return (
-    <CardShell>
-      <div className="flex items-center justify-between">
-        <p className="font-display font-bold">Your summaries</p>
-        <span className="rounded-full bg-surface-raised px-2.5 py-1 text-xs text-subtle">4 saved</span>
-      </div>
-      <ul className="mt-4 space-y-2">
-        {historyItems.map((h, i) => (
-          <motion.li
-            key={h.url}
-            initial={{ opacity: 0, x: -12 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.3 + i * 0.1 }}
-            className="flex items-center gap-3 rounded-2xl border border-border bg-background/60 px-4 py-3"
-          >
-            <Link2 className="size-4 shrink-0 text-brand" />
-            <span className="min-w-0 flex-1 truncate text-sm text-accent-soft">{h.url}</span>
-            <span className="flex items-center gap-1 text-xs text-subtle">
-              <Clock className="size-3" />
-              {h.when}
-            </span>
-          </motion.li>
-        ))}
-      </ul>
-    </CardShell>
-  );
-}
-
-function CopyCard() {
-  const [copied, setCopied] = useState(false);
-  useEffect(() => {
-    const id = window.setInterval(() => setCopied((c) => !c), 2200);
-    return () => window.clearInterval(id);
-  }, []);
-  return (
-    <CardShell>
-      <p className="text-xs font-semibold tracking-[0.18em] text-subtle uppercase">
-        Article <span className="text-gradient-accent">summary</span>
-      </p>
-      <p className="mt-3 text-sm leading-relaxed text-muted">
-        A six-month trial across 61 companies found revenue held steady while burnout and sick days fell. Most firms kept the shorter week after the trial ended.
-      </p>
-      <div className="mt-5 flex items-center gap-2">
-        <span className="inline-flex h-9 items-center gap-2 rounded-full border border-border-strong bg-background px-4 text-sm">
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.span key={String(copied)} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} className="inline-flex items-center gap-2">
-              {copied ? <Check className="size-4 text-success" /> : <Copy className="size-4 text-subtle" />}
-              {copied ? "Copied" : "Copy summary"}
-            </motion.span>
-          </AnimatePresence>
-        </span>
-        <span className="inline-flex size-9 items-center justify-center rounded-full border border-border text-subtle">
-          <Trash2 className="size-4" />
-        </span>
-      </div>
-    </CardShell>
-  );
-}
-
-function PrivacyCard() {
-  return (
-    <CardShell>
-      <div className="flex items-center gap-3">
-        <span className="inline-flex size-10 items-center justify-center rounded-2xl bg-success/10">
-          <ShieldCheck className="size-5 text-success" />
-        </span>
-        <div>
-          <p className="font-display font-bold">Signed in with Google</p>
-          <p className="text-sm text-subtle">or email and password</p>
-        </div>
-      </div>
-      <div className="mt-5 space-y-2 text-sm">
-        {["Summaries visible only to you", "Delete any summary in one click", "No ads, no tracking pixels"].map((t) => (
-          <div key={t} className="flex items-center gap-2 rounded-xl bg-background/60 px-3 py-2.5 text-muted">
-            <Check className="size-4 text-brand" />
-            {t}
-          </div>
-        ))}
-      </div>
-    </CardShell>
-  );
-}
-
 export function Features() {
   return (
     <section id="features" className="scroll-mt-24 px-4 py-24 sm:py-32">
       <SectionHeading
         eyebrow="Features"
         title={<>Built for people who <span className="text-gradient-brand">read a lot</span></>}
-        description="Everything you need to get through your reading list, and nothing you don't."
+        description="Everything you need to get through your reading list, and nothing you don't. Each card below is the real feature, running."
       />
-      <div className="mx-auto mt-20 max-w-6xl space-y-28">
-        <FeatureRow
-          eyebrow="History"
-          title="Every summary, saved where you can find it"
-          points={[
-            { title: "Your reading, in one list", body: "Each link you summarize is saved to your account, newest first." },
-            { title: "On every device", body: "Sign in anywhere and your history is already there." },
-          ]}
-          card={<HistoryCard />}
-        />
-        <FeatureRow
-          flip
-          eyebrow="Share"
-          title="Copy the gist in one click"
-          points={[
-            { title: "Ready to paste", body: "Drop a summary into Slack, notes or an email without retyping a word." },
-            { title: "Tidy as you go", body: "Delete summaries you no longer need. They're gone for good." },
-          ]}
-          card={<CopyCard />}
-        />
-        <FeatureRow
-          eyebrow="Account"
-          title="Private by default"
-          points={[
-            { title: "Sign in your way", body: "Continue with Google, or use an email and password." },
-            { title: "Your data stays yours", body: "Only you can see your summaries. We don't sell or share them." },
-          ]}
-          card={<PrivacyCard />}
-        />
-      </div>
+      <FeatureCards />
     </section>
   );
 }

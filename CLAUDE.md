@@ -67,6 +67,8 @@ Request flow: **UI → server action (`src/app/app/actions.ts`) → `requireUser
 | Transactional email              | `src/server/email.ts` (`sendActionEmail`, `escapeHtml`)     |
 | Brand colors, fonts, gradients   | `src/app/globals.css` (`@theme` tokens + brand utilities)   |
 | Buttons, inputs, logo, typewriter| `src/components/ui/*`                                       |
+| Hero film timing (beats, cursor, captions, sound cues) | `src/components/landing/film/script.ts` |
+| Shared rAF loop + visible-only clocks | `src/components/landing/film/frame.ts` (`onFrame`, `whileVisible`, `useLoop`) |
 | Safe post-login redirects        | `src/lib/safe-redirect.ts`                                  |
 
 ## 3. TypeScript
@@ -98,6 +100,7 @@ Inline comments explain outcomes and intent, not syntax. Keep them short.
 - Reduced motion is handled globally by `<MotionConfig reducedMotion="user">` in `src/components/providers.tsx`. Never branch render output on `useReducedMotion()` (it breaks hydration); read it only inside effects.
 - Grids that hold long text need `grid-cols-1` (minmax(0,1fr)) and `min-w-0` children, or they push the page wider than the phone screen.
 - Landing copy stays honest: no invented testimonials, user counts or logos. Demo content uses `.example` domains.
+- **Hero film** (`src/components/landing/film/`): a code-drawn product film. `Scene` is a pure function of `t`; every timestamp, cursor point, caption and sound cue lives in `script.ts`, and the mocks in `mock/` mirror the real `/app` UI, so change them when that UI changes. No CSS keyframes or `Math.random()` for story beats (use `random(seed)` from `ease.ts`). The feature cards in `landing/cards/` use the same helpers via `useLoop`.
 - Icons: `lucide-react`. Follow `web-design-guidelines`, `vercel-react-best-practices` and `vercel-composition-patterns`.
 
 ## 6. Workflow skills: isolate, build, prove, ship
